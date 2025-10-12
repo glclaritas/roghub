@@ -95,8 +95,8 @@ void toggle_profile(void) {
     int tid=1;              // defaults to internal id balanced
     FILE *fptr = fopen(LASTPFP_FILE, "r");
     if (fptr) {
-        fscanf(fptr,"%d",&tid);
-        fclose(fptr);
+        if (fscanf(fptr,"%d",&tid) != 1)
+            fclose(fptr);
     }
     tid = ( tid +1 ) % 4;   // allow sending the max value of 3 even if custom profile doesn't exist
                             // apply_profile will handle
