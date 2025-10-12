@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "cpucontrol.h"
+
+#define CPU_FREQ_PATH "/sys/devices/system/cpu"
+#define SCALING_MAX_FILE "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+#define SCALING_DRIVER_FILE "/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver"
+
+unsigned int get_cpu_freq(const char *path) {
+    unsigned int freq;
+    FILE *fptr = fopen(path, "r");
+    if (fscanf(fptr, "%d",&freq) != 1) {
+        fprintf(stderr,"Failed to read %s.\n",path);
+        return 0;
+    }
+    fclose(fptr);
+    return freq;
+}
+
+int set_cpu_freq(unsigned int khz) {
+    if (khz == get_cpu_freq(SCALING_MAX_FILE)) {
+        return 0;
+    }
+    if (khz > get_cpu_freq(CPU_MAX_FILE) || khz < get_cpu_freq(CPU_MIN_FILE)){
+        fprintf(stderr,"%d is not a valid value\n", khz);
+        return 0;
+    }
+    char path[128];
+    int ncpu = sysconf(_SC_NPROCESSORS_ONLN);
+    for (int i = 0; i < ncpu; i++){
+        snprintf(path, sizeof(path), CPU_FREQ_PATH "/cpu%d/cpufreq/scaling_max_freq",i);
+        FILE *fptr = fopen(path, "w");
+        if (fptr == NULL){
+            fprintf(stderr,"Can't write %s. Permission denied!\n", path);
+            return 0;
+        }
+        fprintf(fptr,"%u",khz);
+        fclose(fptr);
+    }
+    return 1;
+}
+
+int set_turbo(int val) {
+    val = ( val == 0 || val == 1 ) ? val : 0;
+    char governor[32];
+    char boost_path[128];
+    FILE *fptr = fopen(SCALING_DRIVER_FILE, "r");
+    if (fscanf(fptr, "%s", governor) != 1) {
+        printf("Can't read %s.Exiting\n",SCALING_DRIVER_FILE);
+        return 0;
+    }
+    fclose(fptr);
+    if (strcmp(governor, "intel_pstate") == 0){
+        snprintf(boost_path, sizeof(boost_path), "/sys/devices/system/cpu/intel_pstate/no_turbo");
+        val = (val + 1) % 2;            // flip intel pstate takes !true input
+    }else snprintf(boost_path, sizeof(boost_path), "/sys/devices/system/cpu/cpufreq/boost");
+    
+    fptr = fopen(boost_path, "w");
+    if (!fptr) {
+        fprintf(stderr,"Boost mode is not changing.(Can't write or not supported)\n");
+        return 0;
+    }
+    fprintf(fptr,"%d",val);
+    fclose(fptr);
+    return 1;
+}

@@ -1,0 +1,12 @@
+# allow controlling of intel turbo boost
+SUBSYSTEM=="cpu", ACTION=="add", RUN+="/bin/chmod --silent 0666 /sys/devices/system/cpu/intel_pstate/no_turbo"
+
+# allow controlling of boost
+SUBSYSTEM=="cpu", ACTION=="add", RUN+="/bin/chmod --silent 0666 /sys/devices/system/cpu/cpufreq/boost"
+
+# allow controlling of cpu max frequency.
+SUBSYSTEM=="cpu", KERNEL=="cpu[0-9]*", ACTION=="add", RUN+="/bin/chmod --silent 0666 /sys%p/cpufreq/scaling_max_freq"
+
+# allow controlling of throttle_thermal_policy
+ACTION=="add", SUBSYSTEM=="platform", KERNEL=="asus-nb-wmi", RUN+="/bin/chmod --silent 0666 /sys%p/throttle_thermal_policy"
+
