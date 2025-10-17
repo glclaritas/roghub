@@ -9,7 +9,6 @@
 #include "osd.h"
 #include "profile.h"
 
-#define LASTPFP_FILE "/tmp/.rogctlpfp"
 char cpath[PATH_MAX];
 
 static int readcfg(char *ckey, char *cval);
@@ -81,7 +80,14 @@ int apply_profile(int reqid) {
     fanmode_setid(profile_p[id]->fanmode);
     set_cpu_freq(profile_p[id]->max_ghz);
 
-    FILE *fptr = fopen(LASTPFP_FILE, "w");
+    char lastpfp_path[PATH_MAX];
+    if (getenv("XDG_RUNTIME_DIR") != NULL) {
+        snprintf(lastpfp_path, sizeof(lastpfp_path), "%s/.roghubpfp", getenv("XDG_RUNTIME_DIR"));
+    }else if (getenv("UID") != NULL) {
+        snprintf(lastpfp_path, sizeof(lastpfp_path), "/tmp/%s.roghubpfp", getenv("UID"));
+    }else snprintf(lastpfp_path, sizeof(lastpfp_path), "/tmp/roghubpfp");
+
+    FILE *fptr = fopen(lastpfp_path, "w");
     if (fptr == NULL)
         return 0;
     if (fptr) {
@@ -93,7 +99,13 @@ int apply_profile(int reqid) {
 
 void toggle_profile(void) {
     int tid=1;              // defaults to internal id balanced
-    FILE *fptr = fopen(LASTPFP_FILE, "r");
+    char lastpfp_path[PATH_MAX];
+    if (getenv("XDG_RUNTIME_DIR") != NULL) {
+        snprintf(lastpfp_path, sizeof(lastpfp_path), "%s/.roghubpfp", getenv("XDG_RUNTIME_DIR"));
+    }else if (getenv("UID") != NULL) {
+        snprintf(lastpfp_path, sizeof(lastpfp_path), "/tmp/%s.roghubpfp", getenv("UID"));
+    }else snprintf(lastpfp_path, sizeof(lastpfp_path), "/tmp/roghubpfp");
+    FILE *fptr = fopen(lastpfp_path, "r");
     if (fptr) {
         if (fscanf(fptr,"%d",&tid) != 1)
             fclose(fptr);
