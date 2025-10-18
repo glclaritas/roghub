@@ -11,7 +11,7 @@
 
 char cpath[PATH_MAX];
 
-static int readcfg(char *ckey, char *cval);
+static int readcfg(char *ckey, char *cval, size_t cval_size);
 static int id = 1;
 
 int nprofile = 3;
@@ -41,21 +41,21 @@ profile_t custom;
 profile_t *profile_p[4] = { &silent, &balanced, &turbo, &custom};
 
 static int has_custompfp() {
-    char tmp[64];
+    char tmp[128];
     char *endptr;
-    if (!readcfg("name",custom.name)) return 0;
+    if (!readcfg("name",custom.name, sizeof(custom.name))) return 0;
 
-    if (!readcfg("fanmode",tmp))return 0;               // [ silent, balanced, turbo ]
+    if (!readcfg("fanmode",tmp, sizeof(tmp)))return 0;               // [ silent, balanced, turbo ]
     int ttp = strtoul(tmp, &endptr, 10);                // config reading -> thermal_throttle_policy mapping
     if (*endptr != '\0') return 0;                      // 1 2 3  -> 2 0 1
     ttp = (ttp <= 3 && ttp >= 1) ? (ttp + 1 ) % 3 : 1;  // ( x + 1 ) % 3
     custom.fanmode = ttp;
     
-    if (!readcfg("turbo",tmp)) return 0;
+    if (!readcfg("turbo",tmp, sizeof(tmp))) return 0;
     custom.turbo = strtoul(tmp, &endptr, 10);
     if (*endptr != '\0') return 0;
 
-    if (!readcfg("maxghz",tmp)) return 0;
+    if (!readcfg("maxghz",tmp, sizeof(tmp))) return 0;
     double ghz = strtod(tmp, &endptr);
     if (*endptr != '\0') return 0;
     custom.max_ghz = (unsigned int)(ghz * 1e6);
@@ -79,6 +79,7 @@ int apply_profile(int reqid) {
     }
     fanmode_setid(profile_p[id]->fanmode);
     set_cpu_freq(profile_p[id]->max_ghz);
+
 
     char lastpfp_path[PATH_MAX];
     if (getenv("XDG_RUNTIME_DIR") != NULL) {
@@ -119,11 +120,13 @@ int show_profile() {
     return show_osd(profile_p[id]->name); 
 }
 
-static int readcfg(char *pkey, char *pval){
+static int readcfg(char *pkey, char *pval, size_t pval_size){
     char *homepath = getenv("HOME");
-    if (homepath) {
-        snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",homepath); 
+    if (!homepath) {
+        fprintf(stderr, "$HOME not set. Can't load config.\n");
+        return 0;
     }
+    snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",homepath); 
 
     FILE *cfile;
     cfile = fopen(cpath, "r");
@@ -131,8 +134,7 @@ static int readcfg(char *pkey, char *pval){
         return 0;
     }
 
-    char line[64];
-
+    char line[128];
     while (fgets(line, sizeof(line),cfile)){
         char *fsptr;
 
@@ -152,7 +154,7 @@ static int readcfg(char *pkey, char *pval){
             return 0;
         }
 
-        if (*(fsptr -1) == ' ') {
+        if (fsptr > line && *(fsptr -1) == ' ') {
             *(fsptr-1) = '\0';
         }
         *fsptr = '\0';
@@ -164,7 +166,7 @@ static int readcfg(char *pkey, char *pval){
 
 
         if (strcmp(pkey,key) == 0){
-            snprintf(pval, sizeof(pval), "%s",val);
+            snprintf(pval, sizeof(pval_size), "%s",val);
             fclose(cfile);
             return 1;
         }
