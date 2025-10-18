@@ -32,7 +32,7 @@ int fanmode_setid(int targetmode){
         fprintf(stderr,"Can't write to %s. Permission denied!\n",TTP_FILE);
         return 0;
     }
-    if (fprintf(fptr,"%d",targetmode) != 1) {
+    if (fprintf(fptr,"%d",targetmode) < 0) {
         fprintf(stderr,"Can't write to %s. Permission denied!\n",TTP_FILE);
         fclose(fptr);
         return 0;
@@ -51,5 +51,4 @@ int fanmode_toggle() {
 }
 int show_fanmode() {
     return show_osd(fanmodes[fanmode_getid()]);
-
 }
