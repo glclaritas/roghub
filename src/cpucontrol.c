@@ -11,8 +11,13 @@
 unsigned int get_cpu_freq(const char *path) {
     unsigned int freq;
     FILE *fptr = fopen(path, "r");
+    if(!fptr) {
+        fprintf(stderr, "Can't read cpu frequency values.\n");
+        return 0;
+    }
     if (fscanf(fptr, "%d",&freq) != 1) {
         fprintf(stderr,"Failed to read %s.\n",path);
+        fclose(fptr);
         return 0;
     }
     fclose(fptr);
@@ -23,8 +28,8 @@ int set_cpu_freq(unsigned int khz) {
     if (khz == get_cpu_freq(SCALING_MAX_FILE)) {
         return 0;
     }
-    if (khz > get_cpu_freq(CPU_MAX_FILE) || khz < get_cpu_freq(CPU_MIN_FILE)){
-        fprintf(stderr,"%d is not a valid value\n", khz);
+    if (khz > get_cpu_freq(CPU_MAX_FILE) || khz < get_cpu_freq(CPU_MIN_FILE) || khz == 0){
+        fprintf(stderr,"Target cpu frequency is not a valid value. %ul\n", khz);
         return 0;
     }
     char path[128];
@@ -33,7 +38,7 @@ int set_cpu_freq(unsigned int khz) {
         snprintf(path, sizeof(path), CPU_FREQ_PATH "/cpu%d/cpufreq/scaling_max_freq",i);
         FILE *fptr = fopen(path, "w");
         if (fptr == NULL){
-            fprintf(stderr,"Can't write %s. Permission denied!\n", path);
+            fprintf(stderr,"Can't set cpu frequencies. Permission denied!\n");
             return 0;
         }
         fprintf(fptr,"%u",khz);
@@ -47,8 +52,13 @@ int set_turbo(int val) {
     char governor[32];
     char boost_path[128];
     FILE *fptr = fopen(SCALING_DRIVER_FILE, "r");
+    if (!fptr) {
+        fprintf(stderr, "Can't read cpu boost state.\n");
+        return 0;
+    }
     if (fscanf(fptr, "%s", governor) != 1) {
         printf("Can't read %s.Exiting\n",SCALING_DRIVER_FILE);
+        fclose(fptr);
         return 0;
     }
     fclose(fptr);
@@ -59,7 +69,7 @@ int set_turbo(int val) {
     
     fptr = fopen(boost_path, "w");
     if (!fptr) {
-        fprintf(stderr,"Boost mode is not changing.(Can't write or not supported)\n");
+        fprintf(stderr, "Can't change cpu boost state.\n");
         return 0;
     }
     fprintf(fptr,"%d",val);
