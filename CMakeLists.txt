@@ -32,3 +32,14 @@ install(FILES 99-roghub-control.rules
 
 install(TARGETS rogctl
         RUNTIME DESTINATION bin)
+
+enable_testing()
+add_executable(etest
+    src/test.c
+    src/cpucontrol.c
+    src/fancontrol.c
+    src/profile.c
+    src/osd.c
+)
+target_include_directories(etest PRIVATE src)
+add_test(NAME errortest COMMAND etest)

@@ -48,7 +48,10 @@ int set_cpu_freq(unsigned int khz) {
 }
 
 int set_turbo(int val) {
-    val = ( val == 0 || val == 1 ) ? val : 0;
+    if ( val != 0 || val != 1 ) {
+        fprintf(stderr, "Invalid boost mode value. %d\n",val);
+        return 0;
+    }
     char governor[32];
     char boost_path[128];
     FILE *fptr = fopen(SCALING_DRIVER_FILE, "r");
