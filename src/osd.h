@@ -1,6 +1,6 @@
 #ifndef OSD_H
 #define OSD_H
 
-int show_osd(char *msg);
+int osd_show(char *msg);
 
 #endif

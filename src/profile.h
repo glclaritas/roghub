@@ -2,13 +2,13 @@
 #define PROFILES_H
 
 /* apply given profile id */
-int apply_profile(int id);
+int profile_apply(int id);
 
 /* toggle to next profile id */
-void toggle_profile(void);
+void profile_toggle(void);
 
 /* show profile osd */
-int show_profile();
+int profile_display();
 
 typedef struct {
     char name[32];

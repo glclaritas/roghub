@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 99)
 
 set(SOURCES
     src/main.c
+    src/config.c
     src/cpucontrol.c
     src/fancontrol.c
     src/profile.c
@@ -36,6 +37,7 @@ install(TARGETS rogctl
 enable_testing()
 add_executable(etest
     src/test.c
+    src/config.c
     src/cpucontrol.c
     src/fancontrol.c
     src/profile.c

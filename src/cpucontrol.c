@@ -8,7 +8,7 @@
 #define SCALING_MAX_FILE "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
 #define SCALING_DRIVER_FILE "/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver"
 
-unsigned int get_cpu_freq(const char *path) {
+unsigned int cpu_get_freq(const char *path) {
     unsigned int freq;
     FILE *fptr = fopen(path, "r");
     if(!fptr) {
@@ -24,11 +24,11 @@ unsigned int get_cpu_freq(const char *path) {
     return freq;
 }
 
-int set_cpu_freq(unsigned int khz) {
-    if (khz == get_cpu_freq(SCALING_MAX_FILE)) {
+int cpu_set_freq(unsigned int khz) {
+    if (khz == cpu_get_freq(SCALING_MAX_FILE)) {
         return 0;
     }
-    if (khz > get_cpu_freq(CPU_MAX_FILE) || khz < get_cpu_freq(CPU_MIN_FILE) || khz == 0){
+    if (khz > cpu_get_freq(CPU_MAX_FILE) || khz < cpu_get_freq(CPU_MIN_FILE) || khz == 0){
         fprintf(stderr,"Target cpu frequency is not a valid value. %ul\n", khz);
         return 0;
     }
@@ -47,7 +47,7 @@ int set_cpu_freq(unsigned int khz) {
     return 1;
 }
 
-int set_turbo(int val) {
+int cpu_set_turbo(int val) {
     if ( val != 0 && val != 1 ) {
         fprintf(stderr, "Invalid boost mode value. %d\n",val);
         return 0;

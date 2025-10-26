@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int show_osd(char *msg) {
+int osd_show(char *msg) {
     if (getenv("WAYLAND_DISPLAY") != NULL){
         char *osdargv[] = {
             "swayosd-client",

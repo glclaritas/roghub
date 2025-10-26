@@ -108,20 +108,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (profilearg){
-        apply_profile(profile_num-1);       // -1 to offset internal working id and cli arg id
+        profile_apply(profile_num-1);       // -1 to offset internal working id and cli arg id
                                             // interal id: 0 1 2 3
                                             // cli arg id: 1 2 3 4
-        if (displayarg) show_profile();
+        if (displayarg) profile_display();
     }
 
     if (togglearg){
-        toggle_profile();
-        if (displayarg) show_profile();
+        profile_toggle();
+        if (displayarg) profile_display();
     }
     
     if (ftogglearg){
         fanmode_toggle();
-        if (displayarg) show_fanmode();
+        if (displayarg) fanmode_display();
     }
 
     return 0;

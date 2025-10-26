@@ -11,7 +11,7 @@ int fanmode_getid(void);
 int fanmode_setid(int targetmode);
 
 /* display fanmode osd */
-int show_fanmode(void);
+int fanmode_display(void);
 
 extern char *TTP_FILE;
 

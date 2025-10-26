@@ -7,7 +7,7 @@ int main() {
     puts("Testing cpu control error handling"); 
 
     // non existence cpu freq readings
-    unsigned int val = get_cpu_freq("/no/path"); 
+    unsigned int val = cpu_get_freq("/no/path"); 
     if (val != 0) {
         fprintf(stderr, "cpu reading test failed.\n");
         return 1;
@@ -15,19 +15,19 @@ int main() {
     puts("Invalid path cpu freq reading test: PASSED"); 
 
     // setting cpu freq to invalid values
-    int ret = set_cpu_freq(0);
+    int ret = cpu_set_freq(0);
     if (ret != 0) {
         fprintf(stderr, "cpu freq setting test failed.\n");
         return 1;
     }
     puts("Invalid cpu freq(0) test: PASSED"); 
-    ret = set_cpu_freq(-1);
+    ret = cpu_set_freq(-1);
     if (ret != 0) {
         fprintf(stderr, "cpu freq setting test failed.\n");
         return 1;
     }
     puts("Invalid cpu freq(-1) test: PASSED"); 
-    ret = set_cpu_freq(999999999ul);
+    ret = cpu_set_freq(999999999ul);
     if (ret != 0) {
         fprintf(stderr, "cpu freq setting test failed.\n");
         return 1;
@@ -35,13 +35,13 @@ int main() {
     puts("Invalid cpu freq(999999999) test: PASSED"); 
 
     // setting turbo to invalid values
-    ret = set_turbo(-1);
+    ret = cpu_set_turbo(-1);
     if (ret != 0) {
         fprintf(stderr, "boostmode setting test failed!\n");
         return 1;
     }
     puts("Invalid boost mode(-1) setting test: PASSED!");
-    ret = set_turbo(2);
+    ret = cpu_set_turbo(2);
     if (ret != 0) {
         fprintf(stderr, "boostmode setting test failed!\n");
         return 1;
