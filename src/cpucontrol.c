@@ -48,7 +48,7 @@ int set_cpu_freq(unsigned int khz) {
 }
 
 int set_turbo(int val) {
-    if ( val != 0 || val != 1 ) {
+    if ( val != 0 && val != 1 ) {
         fprintf(stderr, "Invalid boost mode value. %d\n",val);
         return 0;
     }
