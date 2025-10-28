@@ -6,6 +6,10 @@ project(rogctl VERSION 1.0.2 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
 
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR "Only Linux is supported.")
+endif()
+
 set(SOURCES
     src/main.c
     src/config.c
