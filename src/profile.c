@@ -62,7 +62,7 @@ static int has_custompfp() {
     cfgval = cfg_read("maxghz");
     double ghz = strtod(cfgval, &endptr);
     if (cfgval == endptr) return 0;
-    custom.max_ghz = (unsigned int)(ghz * 1e6);
+    custom.max_khz = (unsigned int)(ghz * 1e6);
     return 1;
 }
 
@@ -77,10 +77,10 @@ int profile_apply(int extid) {
                                             // to get correct cpu max value reading below
                                             // no turbo -> cpumax = cpu base 
     if (id < 3) {
-        profile_p[id]->max_ghz = cpu_get_freq(profile_maxfreqs[id]);
+        profile_p[id]->max_khz = cpu_get_freq(profile_maxfreqs[id]);
     }
     fanmode_setid(profile_p[id]->fanmode);
-    cpu_set_freq(profile_p[id]->max_ghz);
+    cpu_set_freq(profile_p[id]->max_khz);
 
     char lastpfp_path[PATH_MAX];
     if (getenv("XDG_RUNTIME_DIR") != NULL) {

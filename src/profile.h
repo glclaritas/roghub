@@ -14,7 +14,7 @@ typedef struct {
     char name[32];
     int fanmode;
     int turbo;
-    unsigned int max_ghz;
+    unsigned int max_khz;
 } profile_t;
 
 #endif
