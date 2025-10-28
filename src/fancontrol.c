@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdio.h>
 
 #include "fancontrol.h"
@@ -11,34 +13,37 @@ char *TTP_FILE="/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy";
 static char *fanmodes[] = { "Balanced", "Turbo", "Silent" };    // 0,1,2
 
 int fanmode_getid(){
-    FILE *fptr = fopen(TTP_FILE, "r");
-    if (!fptr) {
-        fprintf(stderr,"Can't read %s. Permission denied!\n",TTP_FILE);
-        return 0;   // balanced fanmode value
+    int fd, fanmode = 0;
+    char c;
+
+    fd = open(TTP_FILE, O_RDONLY);
+    if (fd == -1) {
+        fprintf(stderr,"Error(1) reading fanmode.\n");
     }
-    int fanmode;
-    if (fscanf(fptr,"%1d",&fanmode) != 1) fanmode = 0;
-    fclose(fptr);
+
+    if (read(fd, &c, 1) != 1) {
+        fprintf(stderr,"Error(2) reading fanmode values. Invalid input.\n");
+    } else fanmode = c - '0';
+    close(fd);
     return (fanmode >= FANMODE_MIN && fanmode <= FANMODE_MAX) ? fanmode: 0;
 }
 
 int fanmode_setid(int targetmode){
-    if (targetmode < FANMODE_MIN || targetmode > FANMODE_MAX) {
-        fprintf(stderr,"Invalid fanmode!\n");
-        return 0;
+    int fd, ret = 1;
+    targetmode = (targetmode <= FANMODE_MAX && targetmode >= FANMODE_MIN) ? targetmode : 0;
+    char c = '0' + targetmode;
+
+    fd = open(TTP_FILE, O_WRONLY | O_CLOEXEC);
+    if (fd == -1) {
+        fprintf(stderr, "Error(1). Can't change fanmode. Permission denied.\n");
+        ret = 0;
     }
-    FILE *fptr = fopen(TTP_FILE, "w");
-    if (!fptr) {
-        fprintf(stderr,"Can't write to %s. Permission denied!\n",TTP_FILE);
-        return 0;
+    if (write(fd, &c, 1) != 1) {
+        fprintf(stderr, "Error(2). Can't change fanmode. Invalid input.\n");
+        ret = 0;
     }
-    if (fprintf(fptr,"%d",targetmode) < 0) {
-        fprintf(stderr,"Can't write to %s. Permission denied!\n",TTP_FILE);
-        fclose(fptr);
-        return 0;
-    }
-    fclose(fptr);
-    return 1;
+    close(fd);
+    return ret;
 }
 
 int fanmode_toggle() {
