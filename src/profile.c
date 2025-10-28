@@ -41,7 +41,6 @@ static int has_custompfp() {
     char *endptr, *cfgval;
     cfgval = cfg_read("name");
     if (cfgval == NULL) {
-        printf("name is %s\n",cfgval);
         return 0;
     }
     snprintf(custom.name, sizeof(custom.name), "%s", cfgval);
@@ -93,14 +92,14 @@ int profile_apply(int extid) {
     if (fptr == NULL)
         return 0;
     if (fptr) {
-        fprintf(fptr, "%d\n",id);
+        fprintf(fptr, "%d\n",id+1);         // write external id
         fclose(fptr);
     }
     return 1;
 }
 
 void profile_toggle(void) {
-    int tid=1;              // defaults to internal id balanced
+    int lastid=2;                           // defaults to external id balanced
     char lastpfp_path[PATH_MAX];
     if (getenv("XDG_RUNTIME_DIR") != NULL) {
         snprintf(lastpfp_path, sizeof(lastpfp_path), "%s/.roghubpfp", getenv("XDG_RUNTIME_DIR"));
@@ -109,12 +108,13 @@ void profile_toggle(void) {
     }else snprintf(lastpfp_path, sizeof(lastpfp_path), "/tmp/roghubpfp");
     FILE *fptr = fopen(lastpfp_path, "r");
     if (fptr) {
-        if (fscanf(fptr,"%d",&tid) != 1)
+        if (fscanf(fptr,"%d",&lastid) != 1){
             fclose(fptr);
+        }
     }
-    tid = ( tid +1 ) % 4;   // allow sending the max value of 3 even if custom profile doesn't exist
-                            // apply_profile will handle
-    profile_apply(tid);
+    int nextid = ( lastid % 4 ) + 1;        // allow sending the max value of 3 even if custom profile doesn't exist
+                                            // apply_profile will handle
+    profile_apply(nextid);
 }
 
 int profile_display() {
