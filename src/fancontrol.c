@@ -25,12 +25,11 @@ int fanmode_getid(){
         fprintf(stderr,"Error(2) reading fanmode values. Invalid input.\n");
     } else fanmode = c - '0';
     close(fd);
-    return (fanmode >= FANMODE_MIN && fanmode <= FANMODE_MAX) ? fanmode: 0;
+    return fanmode;
 }
 
 int fanmode_setid(int targetmode){
     int fd, ret = 1;
-    targetmode = (targetmode <= FANMODE_MAX && targetmode >= FANMODE_MIN) ? targetmode : 0;
     char c = '0' + targetmode;
 
     fd = open(TTP_FILE, O_WRONLY | O_CLOEXEC);

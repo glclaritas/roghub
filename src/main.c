@@ -108,9 +108,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (profilearg){
-        profile_apply(profile_num-1);       // -1 to offset internal working id and cli arg id
-                                            // interal id: 0 1 2 3
-                                            // cli arg id: 1 2 3 4
+        profile_apply(profile_num);
         if (displayarg) profile_display();
     }
 

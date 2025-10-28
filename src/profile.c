@@ -12,7 +12,6 @@
 
 static int id = 1;
 
-int nprofile = 3;
 profile_t silent = {
     .name = "Silent",
     .fanmode = 2,
@@ -50,35 +49,34 @@ static int has_custompfp() {
     cfgval = cfg_read("fanmode");
     if (cfgval == NULL) return 0;                       // [silent, balanced, turbo]
     int ttp = strtoul(cfgval, &endptr, 10);             // config reading -> thermal_throttle_policy mapping
-    if (*endptr != '\0' || cfgval == endptr) return 0;  // 1 2 3  -> 2 0 1
-    ttp = (ttp <= 3 && ttp >= 1) ? (ttp + 1 ) % 3 : 1;  // ( x + 1 ) % 3
+    if (cfgval == endptr) return 0;                     // 1 2 3  -> 2 0 1
+    if (ttp > 3 || ttp < 1) return 0;                   // (x+1)%3
+    ttp = (ttp + 1 ) % 3;
     custom.fanmode = ttp;
     
     cfgval = cfg_read("turbo");
     if (cfgval == NULL) return 0;
     custom.turbo = strtoul(cfgval, &endptr, 10);
-    if (*endptr != '\0' || cfgval == endptr) return 0;
+    if (cfgval == endptr) return 0;
 
     cfgval = cfg_read("maxghz");
     double ghz = strtod(cfgval, &endptr);
-    if (*endptr != '\0' || cfgval == endptr) return 0;
+    if (cfgval == endptr) return 0;
     custom.max_ghz = (unsigned int)(ghz * 1e6);
     return 1;
 }
 
-/* reqid is visible as internal id, not cli arg id
- * reqid = 0..3, cli arg = 1..4                 */
-int profile_apply(int reqid) {
-    reqid = (reqid < 0 ) ? 1 : reqid % 4;   // not necessary. but guard?
+int profile_apply(int extid) {
+    int intid = extid - 1;
     int pfp_count = 3;
-    if (reqid == 3 && has_custompfp()) pfp_count++;
+    if (intid == 3 && has_custompfp()) pfp_count++;
 
-    id = reqid % pfp_count;
+    id = intid % pfp_count;
 
     cpu_set_turbo(profile_p[id]->turbo);    // turbo value must be applied first
-                                        // to get correct cpu max value reading below
-                                        // no turbo -> cpumax = cpu base 
-    if ( id < 3) {
+                                            // to get correct cpu max value reading below
+                                            // no turbo -> cpumax = cpu base 
+    if (id < 3) {
         profile_p[id]->max_ghz = cpu_get_freq(profile_maxfreqs[id]);
     }
     fanmode_setid(profile_p[id]->fanmode);
