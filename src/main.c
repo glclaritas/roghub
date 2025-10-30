@@ -108,17 +108,26 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (profilearg){
-        profile_apply(profile_num);
+        if (!profile_apply(profile_num)){
+            fprintf(stderr, "Error: failed to apply performance profile %d!\n", profile_num);
+            return 1;
+        }
         if (displayarg) profile_display();
     }
 
     if (togglearg){
-        profile_toggle();
+        if (!profile_toggle()){
+            fprintf(stderr, "Error: failed to toggle performance profile!\n");
+            return 1;
+        }
         if (displayarg) profile_display();
     }
     
     if (ftogglearg){
-        fanmode_toggle();
+        if (!fanmode_toggle()){
+            fprintf(stderr, "Error: failed to toggle fan profile!\n");
+            return 1;
+        }
         if (displayarg) fanmode_display();
     }
 

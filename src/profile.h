@@ -5,7 +5,7 @@
 int profile_apply(int id);
 
 /* toggle to next profile id */
-void profile_toggle(void);
+int profile_toggle();
 
 /* show profile osd */
 int profile_display();
