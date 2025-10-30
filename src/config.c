@@ -5,20 +5,19 @@
 #include "config.h"
 
 static char cpath[2048];
-char cval[32];
 
-char* cfg_read(char *ckey){
+int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
     char *homepath = getenv("HOME");
     if (!homepath) {
         fprintf(stderr, "$HOME not set. Can't load config.\n");
-        return NULL;
+        return 0;
     }
     snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",homepath); 
 
     FILE *cfile;
     cfile = fopen(cpath, "r");
     if (cfile == NULL){
-        return NULL;
+        return 0;
     }
 
     char line[128];
@@ -29,7 +28,7 @@ char* cfg_read(char *ckey){
         if (!fsptr) {
             fprintf(stderr,"Invalid config file!\n");
             fclose(cfile);
-            return NULL;
+            return 0;
         }
         if (fsptr) *fsptr = '\0';
 
@@ -38,7 +37,7 @@ char* cfg_read(char *ckey){
         if (!fsptr){
             fprintf(stderr,"Invalid config file!\n");
             fclose(cfile);
-            return NULL;
+            return 0;
         }
 
         if (fsptr > line && *(fsptr -1) == ' ') {
@@ -52,15 +51,11 @@ char* cfg_read(char *ckey){
         while (*val == ' ') val++;
 
         if (strcmp(key,ckey) == 0){
-            snprintf(cval, sizeof(cval), "%s",val);
+            snprintf(out_buffer, buffer_size, "%s",val);
             fclose(cfile);
-            return cval;
+            return 1;
         }
     }
     fclose(cfile);
-    return NULL;
-}
-
-int cfg_set(char *key, char *val) {
     return 0;
 }
