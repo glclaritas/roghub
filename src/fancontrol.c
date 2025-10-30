@@ -8,7 +8,7 @@
 #define FANMODE_MAX 2
 #define FANMODE_MIN 0
 
-char *TTP_FILE="/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy";
+#define TTP_FILE "/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy"
 
 static char *fanmodes[] = { "Balanced", "Turbo", "Silent" };    // 0,1,2
 

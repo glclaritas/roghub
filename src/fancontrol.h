@@ -13,6 +13,4 @@ int fanmode_setid(int targetmode);
 /* display fanmode osd */
 int fanmode_display(void);
 
-extern char *TTP_FILE;
-
 #endif
