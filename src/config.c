@@ -1,18 +1,27 @@
+#include <bits/posix2_lim.h>
+#include <limits.h>
+#include <linux/limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "config.h"
 
-static char cpath[2048];
+static char cpath[PATH_MAX];
 
 int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
-    char *homepath = getenv("HOME");
-    if (!homepath) {
-        fprintf(stderr, "$HOME not set. Can't load config.\n");
-        return 0;
+    char *xdg = getenv("XDG_CONFIG_HOME");
+    char *home = getenv("HOME");
+
+    if (xdg) {
+        printf("xdg XDDD\n");
+        snprintf(cpath,sizeof(cpath),"%s/roghub/config",xdg); 
+    } else if (home) {
+        printf("homeee XDDD\n");
+        snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",home); 
+    } else {
+        fprintf(stderr, "Error: can't detemine config path.\n");
     }
-    snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",homepath); 
 
     FILE *cfile;
     cfile = fopen(cpath, "r");
@@ -20,7 +29,7 @@ int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
         return 0;
     }
 
-    char line[128];
+    char line[LINE_MAX];
     while (fgets(line, sizeof(line),cfile)){
         char *fsptr;
 
