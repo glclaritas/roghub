@@ -18,7 +18,7 @@ void print_help(const char *pgname) {
     puts("  -p, --profile [num]       set power profile number (1=Silent, 2=Balanced, 3=Turbo)");
     puts("  -t, --toggle              toggle performance profiles");
     puts("  -f, --fan-toggle          toggle fan(only) profiles");
-    puts("  -d, --display             display OSD (requires swayosd)");
+    puts("  -d, --display             display OSD (requires notify-send)");
     puts("  -v, --version             print version information");
     puts("");
     puts("Config file ~/.config/roghub/config usage example");
