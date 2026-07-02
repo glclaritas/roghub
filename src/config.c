@@ -69,7 +69,7 @@ config_t* cfg_update(void){
             read_value_count++;
         }
         else if (strcmp(key, "fanmode") == 0) {
-            config.fanmode = atoi(val);
+            config.fanmode = (atoi(val)+1) % 3;
             read_value_count++;
         }
         else if (strcmp(key, "turbo") == 0) {
