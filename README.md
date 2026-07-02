@@ -5,7 +5,7 @@ This is a do-as-you-learn hobby project.
 #### Features
  - [x] 3 profile switching[Silent, Balanced, Performance]
  - [x] Separate fan mode control
- - [x] Wayland On-Screen-Display (need to have swayosd)
+ - [x] Wayland On-Screen-Display (need to have notify-send)
  - [ ] GUI
  - [x] Custom Profile
 
@@ -18,6 +18,9 @@ This is a do-as-you-learn hobby project.
     mkdir build && cd build
     cmake .. && make
 
+ #### Installation
+    sudo make install
+
  #### Config file format  
 
     name=<profilename>  
@@ -25,7 +28,7 @@ This is a do-as-you-learn hobby project.
     fanmode=3  
     turbo=1  
 
-fanmode values: 1,2,3  
-turbo values: 1 for on, 0 for off
+fanmode values: { 1 | 2 | 3 }   { silent | balanced | turbo }
+turbo values: { 1 | 0 }         { on | off }
 
 See usage with --help
