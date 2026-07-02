@@ -10,11 +10,4 @@ int profile_toggle();
 /* show profile osd */
 int profile_display();
 
-typedef struct {
-    char name[32];
-    int fanmode;
-    int turbo;
-    unsigned int max_khz;
-} profile_t;
-
 #endif

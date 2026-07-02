@@ -1,9 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <stdlib.h>
+typedef struct {
+    char name[32];
+    int fanmode;
+    int turbo;
+    unsigned int maxkhz;
+} config_t;
 
-/* read key value and write to out_buffer */
-int cfg_read(char *key, char *out_buffer, size_t buffer_size);
+/* read key values from config file and return pointer to config struct */
+config_t* cfg_update(void);
 
 #endif

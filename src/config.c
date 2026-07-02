@@ -8,19 +8,19 @@
 #include "config.h"
 
 static char cpath[PATH_MAX];
+static config_t config;
 
-int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
+config_t* cfg_update(void){
     char *xdg = getenv("XDG_CONFIG_HOME");
     char *home = getenv("HOME");
 
     if (xdg) {
-        printf("xdg XDDD\n");
         snprintf(cpath,sizeof(cpath),"%s/roghub/config",xdg); 
     } else if (home) {
-        printf("homeee XDDD\n");
         snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",home); 
     } else {
         fprintf(stderr, "Error: can't detemine config path.\n");
+        return 0;
     }
 
     FILE *cfile;
@@ -30,6 +30,7 @@ int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
     }
 
     char line[LINE_MAX];
+    int read_value_count=0;
     while (fgets(line, sizeof(line),cfile)){
         char *fsptr;
 
@@ -59,12 +60,25 @@ int cfg_read(char *ckey, char *out_buffer, size_t buffer_size){
         while (*key == ' ') key++;
         while (*val == ' ') val++;
 
-        if (strcmp(key,ckey) == 0){
-            snprintf(out_buffer, buffer_size, "%s",val);
-            fclose(cfile);
-            return 1;
+        if (strcmp(key, "name") == 0) {
+            snprintf(config.name, sizeof(config.name), "%s", val);
+            read_value_count++;
+        }
+        else if (strcmp(key, "maxghz") == 0) {
+            config.maxkhz = atof(val) * 1e6;
+            read_value_count++;
+        }
+        else if (strcmp(key, "fanmode") == 0) {
+            config.fanmode = atoi(val);
+            read_value_count++;
+        }
+        else if (strcmp(key, "turbo") == 0) {
+            config.turbo = atoi(val);
+            read_value_count++;
         }
     }
     fclose(cfile);
-    return 0;
+    if (read_value_count == 4) {
+        return &config;
+    } else return NULL;
 }
