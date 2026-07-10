@@ -54,5 +54,6 @@ int fanmode_toggle() {
     return 1;
 }
 int fanmode_display() {
-    return osd_show(fanmodes[fanmode_getid()]);
+    osd_show(fanmodes[fanmode_getid()]);
+    return 1;
 }

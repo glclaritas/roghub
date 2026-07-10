@@ -10,6 +10,9 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Only Linux is supported.")
 endif()
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBNOTIFY REQUIRED IMPORTED_TARGET libnotify)
+
 set(SOURCES
     src/main.c
     src/config.c
@@ -26,6 +29,8 @@ configure_file(
 )
 
 add_executable(rogctl ${SOURCES})
+
+target_link_libraries(rogctl PRIVATE PkgConfig::LIBNOTIFY)
 
 target_include_directories(rogctl PRIVATE
     src

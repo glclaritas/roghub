@@ -113,5 +113,6 @@ int profile_display() {
     /* fetching and using profile_get_current() pull outdated info and causes error
      * when this function is called right after profile_apply()
      * so we directly use current_pfp_internal_id here */
-    return osd_show(config_p[current_pfp_internal_id]->name); 
+    osd_show(config_p[current_pfp_internal_id]->name); 
+    return 1;
 }

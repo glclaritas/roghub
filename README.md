@@ -12,6 +12,7 @@ This is a do-as-you-learn hobby project.
  #### Requirements
   - asus-nb-wmi kernel module for fan control.
   - provided udev rules for rootless control.
+  - libnotify-devel for building and libnotify for running
 
  #### Building
 
@@ -28,7 +29,7 @@ This is a do-as-you-learn hobby project.
     fanmode=3  
     turbo=1  
 
-fanmode values: { 1 | 2 | 3 }   { silent | balanced | turbo }
+fanmode values: { 1 | 2 | 3 }   { silent | balanced | turbo }  
 turbo values: { 1 | 0 }         { on | off }
 
 See usage with --help
