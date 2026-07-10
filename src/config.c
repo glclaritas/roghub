@@ -20,9 +20,9 @@ config_t* cfg_update(void){
     char *home = getenv("HOME");
 
     if (xdg) {
-        snprintf(cpath,sizeof(cpath),"%s/roghub/config.ini",xdg); 
+        snprintf(cpath,sizeof(cpath),"%s/roghub/config",xdg); 
     } else if (home) {
-        snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config.ini",home); 
+        snprintf(cpath,sizeof(cpath),"%s/.config/roghub/config",home); 
     } else {
         fprintf(stderr, "Error: can't determine config path.\n");
         return 0;
