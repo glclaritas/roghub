@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +38,7 @@ int cpu_set_freq(unsigned int khz) {
         fprintf(stderr,"Target cpu frequency is not a valid value. %u\n", khz);
         return 0;
     }
-    char path[128];
+    char path[PATH_MAX];
     int ncpu = sysconf(_SC_NPROCESSORS_ONLN);
     for (int i = 0; i < ncpu; i++){
         snprintf(path, sizeof(path), CPU_FREQ_PATH "/cpu%d/cpufreq/scaling_max_freq",i);
